@@ -1,197 +1,329 @@
-/* Global reset & box sizing */
+/* GLOBAL RESET*/
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+/* STARFIELD BACKGROUND */
 
-/* Base page styles */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f1f1f1;
-  padding: 20px;
+.starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* stays behind everything */
+  overflow: hidden;
 }
 
-/* Centered container */
+/* Base star layer */
+.stars {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background-repeat: repeat;
+  animation: moveStars linear infinite;
+}
+
+/* Small stars */
+.stars.small {
+  background-image: radial-gradient(2px 2px at 20px 30px, white, transparent),
+                    radial-gradient(1px 1px at 100px 150px, white, transparent),
+                    radial-gradient(1.5px 1.5px at 200px 80px, white, transparent),
+                    radial-gradient(1px 1px at 300px 200px, white, transparent);
+  animation-duration: 120s;
+  opacity: 0.8;
+}
+
+/* Medium stars */
+.stars.medium {
+  background-image: radial-gradient(2px 2px at 50px 60px, #cbd5e1, transparent),
+                    radial-gradient(2px 2px at 150px 120px, #cbd5e1, transparent),
+                    radial-gradient(1.5px 1.5px at 250px 200px, #cbd5e1, transparent);
+  animation-duration: 180s;
+  opacity: 0.8;
+}
+
+/* Large stars */
+.stars.large {
+  background-image: radial-gradient(3px 3px at 80px 100px, #ffffff, transparent),
+                    radial-gradient(2.5px 2.5px at 200px 250px, #ffffff, transparent);
+  animation-duration: 240s;
+  opacity: 0.3;
+}
+
+/* Animation for drifting stars */
+@keyframes moveStars {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+/* Twinkle effect */
+.stars::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  animation: twinkle 4s ease-in-out infinite;
+  opacity: 0.5;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+body {
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+  background: radial-gradient(circle at top, #0b1a2a, #02050a);
+  color: #e6edf3;
+  padding: 30px;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* CONTAINER */
 .container {
-  max-width: 1200px;
+  max-width: 1600px; /* 👈 increased from 1400 */
   margin: 0 auto;
 }
 
-/* Header */
+/*  HEADER (CLEAN HIERARCHY) */
 .site-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  margin: 40px 0;
+  gap: 20px;
+  zoom: 1.3;  
+  overflow-x: hidden;
+}
+
+.logo {
+  width: 9rem;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
 }
 
 h1 {
-  font-family: Verdana, sans-serif;
-  font-weight: bold;
-  color: #212121;
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #ffffff;
 }
 
-/* Logo */
-.logo {
-  width: 140px;
-  margin-right: 15px;
+/* SPACE FACT */
+.space-fact {
+  background: rgba(11, 61, 145, 0.2);
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  padding: 18px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #dbeafe;
 }
 
-/* Date‐picker & button row */
+/* FILTERS */
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  margin: 40px 0;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  padding: 0 20px;
 }
 
-/* Inputs and buttons */
 input[type="date"],
 button {
-  font-family: Arial, sans-serif;
-  font-weight: normal;
-  color: #666;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  line-height: 1.4;
-  width: 100%;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-width: 200px;
 }
 
-/* Button specific */
-button {
-  background-color: #d3d3d3;
-  color: black;
+/* Inputs */
+input[type="date"] {
+  background: #0f1724;
+  border: 1px solid #2a3b55;
+  color: #ffffff;
+}
+/* Force white calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
   cursor: pointer;
 }
-button:hover {
-  background-color: #bfbfbf;
+
+/* Button */
+button {
+  background: linear-gradient(135deg, #0b3d91, #105bd8);
+  border: none;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-/* Stack horizontally on wider screens */
-@media (min-width: 600px) {
+/* Hover */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37,99,235,0.5);
+}
+
+/* Focus glow */
+input:focus,
+button:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(59,130,246,0.6);
+}
+
+/* Desktop layout */
+@media (min-width: 700px) {
   .filters {
     flex-direction: row;
-    padding: 0;
+    justify-content: center;
   }
-  
-  input[type="date"],
-  button {
-    width: auto;
-  }
-}
-/* Space fact box */
-.space-fact {
-  background: #0b3d91;
-  color: white;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  text-align: center;
-  font-size: 14px;
 }
 
-/* Hover scaling effect */
+/*  GALLERY (SPACED + WIDER) */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px; /* 👈 increased spacing */
+  justify-content: center;
+}
+
+/* GALLERY ITEMS (BIGGER) */
 .gallery-item {
-  transition: transform 0.3s ease;
+  flex: 1 1 100%;
+  max-width: 600px; /* 👈 bigger cards */
+  background: rgba(15, 23, 36, 0.95);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
+/* Desktop: 2 columns (bigger visuals) */
+@media (min-width: 1000px) {
+  .gallery-item {
+    flex: 0 1 48%;
+  }
+}
+
+/* Large screens: 3 columns */
+@media (min-width: 1400px) {
+  .gallery-item {
+    flex: 0 1 30%;
+  }
+}
+
+/* Hover effect */
 .gallery-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.04);
+  box-shadow: 0 15px 40px rgba(0, 140, 255, 0.3);
 }
 
-/* Modal styles */
+/* Media */
+.gallery-item img,
+.gallery-item iframe {
+  width: 100%;
+  height: 260px; /* bigger images */
+  object-fit: cover;
+}
+
+/* Text hierarchy */
+.gallery-item p {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.gallery-item strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+/* MODAL */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.8);
+  background: rgba(2, 6, 12, 0.95);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 999;
 }
 
 .modal-content {
-  background: white;
-  padding: 20px;
-  max-width: 800px;
+  background: #0f1724;
+  padding: 30px;
+  max-width: 1000px;
   max-height: 90%;
   overflow-y: auto;
-  border-radius: 8px;
+  border-radius: 14px;
 }
 
-.modal img, .modal iframe {
+.modal img,
+.modal iframe {
   width: 100%;
+  height:auto;
+  margin-bottom: 20px;
+}
+
+.modal h2 {
+  font-size: 1.8rem;
   margin-bottom: 10px;
 }
 
+.modal p {
+  font-size: 1.4rem;
+  line-height: 1.8;
+}
+
+/* Close button */
 .close-modal {
-  cursor: pointer;
   float: right;
-  font-size: 20px;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-/* Gallery flex container */
-.gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-  justify-content: center;
+/* SKELETON LOADERS */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #111827 25%,
+    #1f2937 37%,
+    #111827 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
 }
 
-/* Gallery items */
-.gallery-item {
-  flex: 1 1 100%;  /* full width by default */
-  min-width: 280px;
-  max-width: 500px;
-  background: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
-/* Three columns on wider screens */
-@media (min-width: 1000px) {
-  .gallery-item {
-    flex: 0 1 31%;
-  }
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.gallery-item p {
-  margin-top: 10px;
-  padding: 5px;
-  font-size: 14px;
-}
-
-/* Placeholder content */
+/* PLACEHOLDER */
 .placeholder {
-  flex: 1 1 100%;
+  font-size:larger;
   text-align: center;
-  padding: 40px;
-  color: #666;
+  padding: 80px;
+  color: #8b949e;
 }
 
 .placeholder-icon {
-  font-size: 48px;
+  font-size: 60px;
   margin-bottom: 20px;
 }

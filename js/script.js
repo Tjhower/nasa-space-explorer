@@ -1,54 +1,81 @@
-// Find our date picker inputs on the page
-// Call the setupDateInputs function from dateRange.js
-// This sets up the date pickers to:
-// - Default to a range of 9 days (from 9 days ago to today)
-// - Restrict dates to NASA's image archive (starting from 1995)
+// DATE INPUT SETUP 
+// Find date inputs
 const startInput = document.getElementById('startDate');
 const endInput = document.getElementById('endDate');
+// Initialize date pickers (from dateRange.js)
+setupDateInputs(startInput, endInput);
+
+// GLOBAL ELEMENTS
 const gallery = document.getElementById('gallery');
 const button = document.querySelector('button');
 const factBox = document.getElementById('spaceFact');
 
-setupDateInputs(startInput, endInput);
+// NASA API KEY
+const API_KEY = "Kao0l5xjKQWZoEHJ5q0Pwbg7dc7VEeNXQemSqqbv";
 
-// 🔑 NASA API KEY (use DEMO_KEY for testing)
-const API_KEY = "DEMO_KEY";
+// SPACE FACTS
+async function loadSpaceFact() {
+  try {
+    const res = await fetch('data/spaceFacts.json');
+    const data = await res.json();
 
-// 🌌 Space facts
-const spaceFacts = [
-  "A day on Venus is longer than a year on Venus.",
-  "Neutron stars can spin 600 times per second.",
-  "There are more stars in the universe than grains of sand on Earth.",
-  "One million Earths could fit inside the Sun.",
-  "Space is completely silent because there is no atmosphere."
-];
+    const facts = data.facts;
+    const randomIndex = Math.floor(Math.random() * facts.length);
 
-// 🎲 Random fact on load
-function showRandomFact() {
-  const random = Math.floor(Math.random() * spaceFacts.length);
-  factBox.textContent = "💡 Did You Know? " + spaceFacts[random];
+    factBox.textContent = "💡 Did You Know? " + facts[randomIndex];
+  } catch (err) {
+    factBox.textContent = "💡 Space is amazing—facts unavailable!";
+    console.error("Fact load error:", err);
+  }
 }
 
-showRandomFact();
+// Load fact on page load
+loadSpaceFact();
 
-// 📡 Fetch APOD data
+// SKELETON LOADERS
+function showSkeletons(count = 6) {
+  gallery.innerHTML = "";
+
+  for (let i = 0; i < count; i++) {
+    const skeleton = document.createElement('div');
+    skeleton.classList.add('gallery-item', 'skeleton-card');
+
+    skeleton.innerHTML = `
+      <div class="skeleton" style="height: 150px; margin-bottom: 10px;"></div>
+      <div class="skeleton" style="height: 15px; width: 80%; margin-bottom: 5px;"></div>
+      <div class="skeleton" style="height: 12px; width: 50%;"></div>
+    `;
+
+    gallery.appendChild(skeleton);
+  }
+}
+
+// Fetch APOD data
 async function fetchImages(startDate, endDate) {
   try {
-    gallery.innerHTML = `<p>🔄 Loading space photos…</p>`;
+    // Show skeleton loading UI
+    showSkeletons(6);
 
     const response = await fetch(
       `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&start_date=${startDate}&end_date=${endDate}`
     );
 
+    if (!response.ok) {
+      throw new Error("API request failed");
+    }
+
     const data = await response.json();
-    renderGallery(data.reverse()); // newest first
+
+    // Ensure newest images appear first
+    renderGallery(data.reverse());
+
   } catch (error) {
     gallery.innerHTML = `<p>❌ Failed to load images.</p>`;
-    console.error(error);
+    console.error("Fetch error:", error);
   }
 }
 
-// 🖼️ Render gallery
+// RENDER GALLERY
 function renderGallery(items) {
   gallery.innerHTML = "";
 
@@ -58,9 +85,11 @@ function renderGallery(items) {
 
     let mediaHTML = "";
 
+    // Handle image vs video
     if (item.media_type === "image") {
       mediaHTML = `<img src="${item.url}" alt="${item.title}" />`;
-    } else if (item.media_type === "video") {
+    } 
+    else if (item.media_type === "video") {
       mediaHTML = `
         <iframe 
           src="${item.url}" 
@@ -76,14 +105,14 @@ function renderGallery(items) {
       <p>${item.date}</p>
     `;
 
-    // 🧩 Modal on click
+    // Open modal on click
     div.addEventListener('click', () => openModal(item));
 
     gallery.appendChild(div);
   });
 }
 
-// 🪟 Modal
+// MODAL FUNCTIONALITY
 function openModal(item) {
   const modal = document.createElement('div');
   modal.classList.add('modal');
@@ -106,24 +135,34 @@ function openModal(item) {
     </div>
   `;
 
+  // Close button
   modal.querySelector('.close-modal').onclick = () => modal.remove();
+
+  // Click outside to close
   modal.onclick = (e) => {
     if (e.target === modal) modal.remove();
   };
 
   document.body.appendChild(modal);
 }
-
-// 🎯 Button click
+// Button click
 button.addEventListener('click', () => {
   const startDate = startInput.value;
   const endDate = endInput.value;
 
+  // Validate input
   if (!startDate || !endDate) {
     alert("Please select a date range.");
     return;
   }
 
-  fetchImages(startDate, endDate);
+  // Limit range (recommended: max ~30 days)
+  const diffDays = (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24);
+
+  if (diffDays > 30) {
+    alert("Please select a range of 30 days or less.");
+    return;
+  }
+  fetchImages(startDate, endDate)
 });
 
